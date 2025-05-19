@@ -1,20 +1,6 @@
 import './style.css';
 import axios, { AxiosError } from 'axios';
-
-interface SearchResult {
-    title: string;
-    snippet: string;
-    pageid: number;
-}
-
-interface WikipediaError {
-    code: string;
-    info: string;
-    error?: {
-        code: string;
-        info: string;
-    };
-}
+import { SearchResult, WikipediaError, WikipediaResponse } from './types';
 
 // State management
 let isSearching = false;
@@ -144,9 +130,9 @@ async function fetchArticle(pageId: number) {
 async function makeWikipediaRequest(
     type: 'search' | 'article',
     params: Record<string, string | number | boolean>
-) {
+): Promise<WikipediaResponse> {
     try {
-        const response = await axios.get('https://en.wikipedia.org/w/api.php', {
+        const response = await axios.get<WikipediaResponse>('https://en.wikipedia.org/w/api.php', {
             params: {
                 action: 'query',
                 format: 'json',
