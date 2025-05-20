@@ -25,13 +25,14 @@ function setupEventListeners() {
 
     // Debounced search suggestions
     const debouncedSearch = debounceSearch(async (query: string) => {
-        if (!query.trim()) {
+        const trimmedQuery = query.trim();
+        if (!trimmedQuery || trimmedQuery.length < 3) {
             hideSuggestions();
             return;
         }
 
         try {
-            const suggestions = await getSearchSuggestions(query);
+            const suggestions = await getSearchSuggestions(trimmedQuery);
             showSuggestions(suggestions, fetchArticle);
         } catch (error) {
             console.error('Error fetching suggestions:', error);
@@ -49,7 +50,7 @@ function setupEventListeners() {
     // Add focus event listener
     searchInput.addEventListener('focus', () => {
         const query = searchInput.value.trim();
-        if (query) {
+        if (query && query.length >= 3) {
             debouncedSearch(query);
         }
     });

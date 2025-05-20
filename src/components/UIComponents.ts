@@ -208,6 +208,10 @@ export function validateSearchInput(): boolean {
         showError('Please enter a search term');
         return false;
     }
+    if (query.length < 3) {
+        showError('Search term must be at least 3 characters long');
+        return false;
+    }
     hideError();
     return true;
 } 
