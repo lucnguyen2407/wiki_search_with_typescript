@@ -128,6 +128,11 @@ export function debounceSearch(callback: (query: string) => void, delay: number 
     };
 }
 
+function truncateText(text: string, maxLength: number = 150): string {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength).trim() + '...';
+}
+
 export function displayResults(results: SearchResult[], onResultClick: (pageId: number) => void) {
     resultsContainer.innerHTML = '';
     articleContainer.classList.add('hidden');
@@ -166,12 +171,17 @@ export function displayResults(results: SearchResult[], onResultClick: (pageId: 
             `;
         }
 
+        const previewText = truncateText(result.extract || result.snippet);
+
         resultElement.innerHTML = `
             ${imageHtml}
-            <h2 class="text-xl font-semibold text-blue-600 mb-2">${result.title}</h2>
-            <p class="text-gray-600 flex-grow">${result.extract || result.snippet}</p>
-            <div class="mt-4 text-sm text-blue-500 hover:text-blue-600">
-                Click to read more →
+            <h2 class="text-xl font-semibold text-blue-600 mb-2 line-clamp-2">${result.title}</h2>
+            <p class="text-gray-600 flex-grow line-clamp-3">${previewText}</p>
+            <div class="mt-4 text-sm text-blue-500 hover:text-blue-600 flex items-center">
+                <span>Read full article</span>
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
             </div>
         `;
 
