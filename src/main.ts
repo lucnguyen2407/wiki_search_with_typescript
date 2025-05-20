@@ -10,7 +10,9 @@ import {
     setSearching,
     showSuggestions,
     hideSuggestions,
-    debounceSearch
+    debounceSearch,
+    validateSearchInput,
+    hideError
 } from './components/UIComponents';
 
 // State management
@@ -40,6 +42,7 @@ function setupEventListeners() {
     // Add input event listener for suggestions
     searchInput.addEventListener('input', (e) => {
         const query = (e.target as HTMLInputElement).value;
+        hideError(); // Hide error when user starts typing
         debouncedSearch(query);
     });
 
@@ -51,18 +54,24 @@ function setupEventListeners() {
         }
     });
 
-    searchButton.addEventListener('click', handleSearch);
+    // Handle form submission
+    searchButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleSearch();
+    });
+
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
+            e.preventDefault();
             handleSearch();
         }
     });
 }
 
 async function handleSearch() {
-    const query = getSearchInput().value.trim();
-    if (!query || isSearching) return;
+    if (!validateSearchInput() || isSearching) return;
 
+    const query = getSearchInput().value.trim();
     isSearching = true;
     setSearching(true);
     hideSuggestions();

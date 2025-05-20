@@ -7,6 +7,7 @@ let resultsContainer: HTMLDivElement;
 let articleContainer: HTMLDivElement;
 let suggestionsBox: HTMLDivElement;
 let debounceTimeout: number;
+let errorMessage: HTMLDivElement;
 
 export function initializeUI() {
     const app = document.getElementById('app')!;
@@ -20,16 +21,31 @@ export function initializeUI() {
     header.textContent = 'Wikipedia Search';
 
     const searchContainer = document.createElement('div');
-    searchContainer.className = 'flex gap-2 mb-8 relative';
+    searchContainer.className = 'flex flex-col gap-2 mb-8 relative';
+
+    // Create form wrapper
+    const formWrapper = document.createElement('div');
+    formWrapper.className = 'flex gap-2';
 
     searchInput = document.createElement('input');
     searchInput.type = 'text';
     searchInput.placeholder = 'Search Wikipedia...';
     searchInput.className = 'flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
+    searchInput.setAttribute('aria-label', 'Search Wikipedia');
+    searchInput.setAttribute('required', 'true');
 
     searchButton = document.createElement('button');
     searchButton.textContent = 'Search';
     searchButton.className = 'px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors';
+    searchButton.setAttribute('type', 'submit');
+
+    formWrapper.appendChild(searchInput);
+    formWrapper.appendChild(searchButton);
+
+    // Create error message element
+    errorMessage = document.createElement('div');
+    errorMessage.className = 'text-red-500 text-sm mt-1 hidden';
+    errorMessage.setAttribute('role', 'alert');
 
     // Create suggestions box
     suggestionsBox = document.createElement('div');
@@ -37,8 +53,8 @@ export function initializeUI() {
     suggestionsBox.style.maxHeight = '300px';
     suggestionsBox.style.overflowY = 'auto';
 
-    searchContainer.appendChild(searchInput);
-    searchContainer.appendChild(searchButton);
+    searchContainer.appendChild(formWrapper);
+    searchContainer.appendChild(errorMessage);
     searchContainer.appendChild(suggestionsBox);
 
     searchSection.appendChild(header);
@@ -169,4 +185,29 @@ export function displayError(errorMessage: string) {
 
 export function setSearching(isSearching: boolean) {
     searchButton.disabled = isSearching;
+}
+
+export function showError(message: string) {
+    errorMessage.textContent = message;
+    errorMessage.classList.remove('hidden');
+    searchInput.classList.add('border-red-500');
+    searchInput.classList.add('focus:ring-red-500');
+    searchInput.classList.remove('focus:ring-blue-500');
+}
+
+export function hideError() {
+    errorMessage.classList.add('hidden');
+    searchInput.classList.remove('border-red-500');
+    searchInput.classList.remove('focus:ring-red-500');
+    searchInput.classList.add('focus:ring-blue-500');
+}
+
+export function validateSearchInput(): boolean {
+    const query = searchInput.value.trim();
+    if (!query) {
+        showError('Please enter a search term');
+        return false;
+    }
+    hideError();
+    return true;
 } 
