@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { SearchResult, WikipediaError, WikipediaResponse } from '../types';
+import { SearchResult, WikipediaError, WikipediaResponse, ArticleData } from '../types';
 
 const RATE_LIMIT_DELAY = 1000; // 1 second delay between requests
 let searchTimeout: number = 0;
@@ -58,26 +58,37 @@ export async function searchWikipedia(query: string): Promise<SearchResult[]> {
         srprop: 'snippet|title|pageid'
     });
 
-    return response.query.search;
+    return response.query.search || [];
 }
 
-export async function getWikipediaArticle(pageId: number): Promise<{ title: string; extract: string }> {
+export async function getWikipediaArticle(pageId: number): Promise<ArticleData> {
     const response = await makeRequest('article', {
-        prop: 'extracts',
+        prop: 'extracts|pageimages|info',
         pageids: pageId,
+        pithumbsize: 400,
+        inprop: 'url',
+        redirects: '',
         exintro: true,
         explaintext: true,
         exsentences: 3
     });
 
-    const page = response.query.pages[pageId];
-    if (page.missing) {
+    const pages = response.query.pages;
+    if (!pages) {
+        throw new Error('No article data found');
+    }
+
+    const page = pages[pageId];
+    if (!page || page.missing) {
         throw new Error('Article not found');
     }
 
     return {
         title: page.title,
-        extract: page.extract
+        extract: page.extract || '',
+        thumbnail: page.thumbnail,
+        pageimage: page.pageimage,
+        fullurl: page.fullurl
     };
 }
 
@@ -89,5 +100,5 @@ export async function getSearchSuggestions(query: string): Promise<SearchResult[
         srprop: 'snippet|title|pageid'
     });
 
-    return response.query.search;
+    return response.query.search || [];
 } 

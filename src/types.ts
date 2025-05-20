@@ -1,13 +1,11 @@
 export interface SearchResult {
+    pageid: number;
     title: string;
     snippet: string;
-    pageid: number;
 }
 
 export interface WikipediaError {
-    code: string;
-    info: string;
-    error?: {
+    error: {
         code: string;
         info: string;
     };
@@ -15,11 +13,19 @@ export interface WikipediaError {
 
 export interface WikipediaResponse {
     query: {
-        search: SearchResult[];
-        pages: {
-            [key: number]: {
+        search?: SearchResult[];
+        pages?: {
+            [key: string]: {
+                pageid: number;
                 title: string;
-                extract: string;
+                extract?: string;
+                thumbnail?: {
+                    source: string;
+                    width: number;
+                    height: number;
+                };
+                pageimage?: string;
+                fullurl?: string;
                 missing?: boolean;
             };
         };
@@ -28,4 +34,16 @@ export interface WikipediaResponse {
         code: string;
         info: string;
     };
+}
+
+export interface ArticleData {
+    title: string;
+    extract: string;
+    thumbnail?: {
+        source: string;
+        width: number;
+        height: number;
+    };
+    pageimage?: string;
+    fullurl?: string;
 } 

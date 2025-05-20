@@ -96,7 +96,7 @@ async function fetchArticle(pageId: number) {
 
     try {
         const article = await getWikipediaArticle(pageId);
-        displayArticle(article.title, article.extract);
+        displayArticle(article);
     } catch (error) {
         handleApiError(error);
     } finally {
