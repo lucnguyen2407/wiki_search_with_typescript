@@ -137,6 +137,15 @@ export function displayResults(results: SearchResult[], onResultClick: (pageId: 
         return;
     }
 
+    // Add title for search results
+    const titleContainer = document.createElement('div');
+    titleContainer.className = 'mb-6';
+    const title = document.createElement('h2');
+    title.className = 'text-2xl font-bold text-gray-800';
+    title.textContent = 'Search Results';
+    titleContainer.appendChild(title);
+    resultsContainer.appendChild(titleContainer);
+
     const gridContainer = document.createElement('div');
     gridContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
 
