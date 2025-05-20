@@ -152,9 +152,24 @@ export function displayResults(results: SearchResult[], onResultClick: (pageId: 
     results.forEach(result => {
         const resultElement = document.createElement('div');
         resultElement.className = 'p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col';
+        
+        let imageHtml = '';
+        if (result.thumbnail) {
+            imageHtml = `
+                <div class="mb-4">
+                    <img src="${result.thumbnail.source}" 
+                         alt="${result.title}"
+                         class="rounded-lg w-full h-40 object-cover"
+                         width="${result.thumbnail.width}"
+                         height="${result.thumbnail.height}">
+                </div>
+            `;
+        }
+
         resultElement.innerHTML = `
+            ${imageHtml}
             <h2 class="text-xl font-semibold text-blue-600 mb-2">${result.title}</h2>
-            <p class="text-gray-600 flex-grow">${result.snippet}</p>
+            <p class="text-gray-600 flex-grow">${result.extract || result.snippet}</p>
             <div class="mt-4 text-sm text-blue-500 hover:text-blue-600">
                 Click to read more →
             </div>

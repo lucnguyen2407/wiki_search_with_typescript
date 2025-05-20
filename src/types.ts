@@ -2,6 +2,13 @@ export interface SearchResult {
     pageid: number;
     title: string;
     snippet: string;
+    extract?: string;
+    thumbnail?: {
+        source: string;
+        width: number;
+        height: number;
+    };
+    pageimage?: string;
 }
 
 export interface WikipediaError {

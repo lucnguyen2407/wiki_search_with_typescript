@@ -52,13 +52,32 @@ export async function searchWikipedia(query: string): Promise<SearchResult[]> {
     });
 
     const response = await makeRequest('search', {
-        list: 'search',
-        srsearch: query,
-        srlimit: 10,
-        srprop: 'snippet|title|pageid'
+        generator: 'search',
+        gsrsearch: query,
+        gsrlimit: 20,
+        prop: 'pageimages|extracts',
+        exintro: true,
+        explaintext: true,
+        exlimit: 'max',
+        piprop: 'thumbnail',
+        pithumbsize: 200
     });
 
-    return response.query.search || [];
+    if (!response.query.pages) {
+        return [];
+    }
+
+    // Convert pages object to array and sort by index
+    return Object.values(response.query.pages)
+        .sort((a, b) => a.pageid - b.pageid)
+        .map(page => ({
+            pageid: page.pageid,
+            title: page.title,
+            snippet: page.extract || '',
+            extract: page.extract,
+            thumbnail: page.thumbnail,
+            pageimage: page.pageimage
+        }));
 }
 
 export async function getWikipediaArticle(pageId: number): Promise<ArticleData> {
