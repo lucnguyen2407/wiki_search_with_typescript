@@ -79,4 +79,15 @@ export async function getWikipediaArticle(pageId: number): Promise<{ title: stri
         title: page.title,
         extract: page.extract
     };
+}
+
+export async function getSearchSuggestions(query: string): Promise<SearchResult[]> {
+    const response = await makeRequest('search', {
+        list: 'search',
+        srsearch: query,
+        srlimit: 3, // Limit to 3 suggestions
+        srprop: 'snippet|title|pageid'
+    });
+
+    return response.query.search;
 } 

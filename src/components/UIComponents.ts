@@ -5,6 +5,8 @@ let searchInput: HTMLInputElement;
 let searchButton: HTMLButtonElement;
 let resultsContainer: HTMLDivElement;
 let articleContainer: HTMLDivElement;
+let suggestionsBox: HTMLDivElement;
+let debounceTimeout: number;
 
 export function initializeUI() {
     const app = document.getElementById('app')!;
@@ -18,7 +20,7 @@ export function initializeUI() {
     header.textContent = 'Wikipedia Search';
 
     const searchContainer = document.createElement('div');
-    searchContainer.className = 'flex gap-2 mb-8';
+    searchContainer.className = 'flex gap-2 mb-8 relative';
 
     searchInput = document.createElement('input');
     searchInput.type = 'text';
@@ -29,8 +31,15 @@ export function initializeUI() {
     searchButton.textContent = 'Search';
     searchButton.className = 'px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors';
 
+    // Create suggestions box
+    suggestionsBox = document.createElement('div');
+    suggestionsBox.className = 'absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg hidden z-10';
+    suggestionsBox.style.maxHeight = '300px';
+    suggestionsBox.style.overflowY = 'auto';
+
     searchContainer.appendChild(searchInput);
     searchContainer.appendChild(searchButton);
+    searchContainer.appendChild(suggestionsBox);
 
     searchSection.appendChild(header);
     searchSection.appendChild(searchContainer);
@@ -46,6 +55,13 @@ export function initializeUI() {
     app.appendChild(searchSection);
     app.appendChild(resultsContainer);
     app.appendChild(articleContainer);
+
+    // Add click outside listener to close suggestions
+    document.addEventListener('click', (e) => {
+        if (!searchContainer.contains(e.target as Node)) {
+            hideSuggestions();
+        }
+    });
 }
 
 export function getSearchInput(): HTMLInputElement {
@@ -54,6 +70,46 @@ export function getSearchInput(): HTMLInputElement {
 
 export function getSearchButton(): HTMLButtonElement {
     return searchButton;
+}
+
+export function getSuggestionsBox(): HTMLDivElement {
+    return suggestionsBox;
+}
+
+export function showSuggestions(suggestions: SearchResult[], onSuggestionClick: (pageId: number) => void) {
+    suggestionsBox.innerHTML = '';
+    suggestionsBox.classList.remove('hidden');
+
+    suggestions.forEach(suggestion => {
+        const suggestionElement = document.createElement('div');
+        suggestionElement.className = 'p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0';
+        suggestionElement.innerHTML = `
+            <div class="font-medium text-blue-600">${suggestion.title}</div>
+            <div class="text-sm text-gray-600 line-clamp-2">${suggestion.snippet}</div>
+        `;
+
+        suggestionElement.addEventListener('click', () => {
+            onSuggestionClick(suggestion.pageid);
+            hideSuggestions();
+        });
+
+        suggestionsBox.appendChild(suggestionElement);
+    });
+}
+
+export function hideSuggestions() {
+    suggestionsBox.classList.add('hidden');
+}
+
+export function debounceSearch(callback: (query: string) => void, delay: number = 500) {
+    return (query: string) => {
+        if (debounceTimeout) {
+            clearTimeout(debounceTimeout);
+        }
+        debounceTimeout = window.setTimeout(() => {
+            callback(query);
+        }, delay);
+    };
 }
 
 export function displayResults(results: SearchResult[], onResultClick: (pageId: number) => void) {
