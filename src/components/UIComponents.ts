@@ -8,12 +8,17 @@ let articleContainer: HTMLDivElement;
 let suggestionsBox: HTMLDivElement;
 let debounceTimeout: number;
 let errorMessage: HTMLDivElement;
+let searchSection: HTMLDivElement;
+
+// State management
+let currentSearchResults: SearchResult[] = [];
+let currentQuery: string = '';
 
 export function initializeUI() {
     const app = document.getElementById('app')!;
 
     // Create search section
-    const searchSection = document.createElement('div');
+    searchSection = document.createElement('div');
     searchSection.className = 'max-w-7xl mx-auto p-4 px-6 md:px-8 lg:px-12';
 
     const header = document.createElement('h1');
@@ -133,7 +138,10 @@ function truncateText(text: string, maxLength: number = 150): string {
     return text.slice(0, maxLength).trim() + '...';
 }
 
-export function displayResults(results: SearchResult[], onResultClick: (pageId: number) => void) {
+export function displayResults(results: SearchResult[], query: string, onResultClick: (pageId: number) => void) {
+    currentSearchResults = results;
+    currentQuery = query;
+    
     resultsContainer.innerHTML = '';
     articleContainer.classList.add('hidden');
 
@@ -147,7 +155,7 @@ export function displayResults(results: SearchResult[], onResultClick: (pageId: 
     titleContainer.className = 'mb-6';
     const title = document.createElement('h2');
     title.className = 'text-2xl font-bold text-gray-800';
-    title.textContent = 'Search Results';
+    title.textContent = `Search Results for "${query}"`;
     titleContainer.appendChild(title);
     resultsContainer.appendChild(titleContainer);
 
@@ -192,8 +200,10 @@ export function displayResults(results: SearchResult[], onResultClick: (pageId: 
     resultsContainer.appendChild(gridContainer);
 }
 
-export function displayArticle(article: ArticleData) {
+export function displayArticle(article: ArticleData, onBackClick: () => void) {
     articleContainer.classList.remove('hidden');
+    resultsContainer.classList.add('hidden');
+    searchSection.classList.add('hidden');
     
     let imageHtml = '';
     if (article.thumbnail) {
@@ -209,9 +219,18 @@ export function displayArticle(article: ArticleData) {
     }
 
     articleContainer.innerHTML = `
+        <div class="mb-6">
+            <button onclick="window.backToResults()" 
+                    class="inline-flex items-center text-blue-500 hover:text-blue-600 mb-4">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Back to results
+            </button>
+            <h2 class="text-2xl font-bold text-gray-800">${article.title}</h2>
+        </div>
         <div class="flex flex-col md:flex-row gap-6">
             <div class="flex-1">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">${article.title}</h2>
                 <div class="prose max-w-none">
                     <p class="text-gray-600">${article.extract}</p>
                 </div>
@@ -229,6 +248,23 @@ export function displayArticle(article: ArticleData) {
             </a>
         </div>
     `;
+
+    // Add the back function to the window object
+    (window as any).backToResults = onBackClick;
+}
+
+export function showResults() {
+    articleContainer.classList.add('hidden');
+    resultsContainer.classList.remove('hidden');
+    searchSection.classList.remove('hidden');
+}
+
+export function getCurrentSearchResults(): SearchResult[] {
+    return currentSearchResults;
+}
+
+export function getCurrentQuery(): string {
+    return currentQuery;
 }
 
 export function displayError(errorMessage: string) {
@@ -271,5 +307,5 @@ export function validateSearchInput(): boolean {
         return false;
     }
     hideError();
-    return true;
+    return true; 
 } 

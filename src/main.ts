@@ -1,18 +1,19 @@
 import './style.css';
-import { searchWikipedia, getWikipediaArticle, getSearchSuggestions } from './services/wikipediaApi';
+import { searchWikipedia, getWikipediaArticle } from './services/wikipediaApi';
 import { 
     initializeUI, 
     getSearchInput, 
     getSearchButton, 
+    showSuggestions, 
+    hideSuggestions, 
+    debounceSearch, 
     displayResults, 
     displayArticle, 
     displayError, 
-    setSearching,
-    showSuggestions,
-    hideSuggestions,
-    debounceSearch,
+    setSearching, 
+    hideError, 
     validateSearchInput,
-    hideError
+    showResults
 } from './components/UIComponents';
 
 // State management
@@ -32,17 +33,20 @@ function setupEventListeners() {
         }
 
         try {
-            const suggestions = await getSearchSuggestions(trimmedQuery);
-            showSuggestions(suggestions, fetchArticle);
+            const results = await searchWikipedia(trimmedQuery);
+            if (results.length > 0) {
+                showSuggestions(results.slice(0, 3), handleResultClick);
+            } else {
+                hideSuggestions();
+            }
         } catch (error) {
-            console.error('Error fetching suggestions:', error);
             hideSuggestions();
         }
     });
 
     // Add input event listener for suggestions
     searchInput.addEventListener('input', (e) => {
-        const query = (e.target as HTMLInputElement).value;
+        const query = (e.target as HTMLInputElement).value.trim();
         hideError(); // Hide error when user starts typing
         debouncedSearch(query);
     });
@@ -56,39 +60,39 @@ function setupEventListeners() {
     });
 
     // Handle form submission
-    searchButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        handleSearch();
+    searchButton.addEventListener('click', () => {
+        const query = searchInput.value.trim();
+        if (query) {
+            handleSearch(query);
+        }
     });
 
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            handleSearch();
+            const query = searchInput.value.trim();
+            if (query) {
+                handleSearch(query);
+            }
         }
     });
 }
 
-async function handleSearch() {
-    if (!validateSearchInput() || isSearching) return;
+async function handleSearch(query: string) {
+    if (!validateSearchInput()) return;
 
-    const query = getSearchInput().value.trim();
-    isSearching = true;
     setSearching(true);
-    hideSuggestions();
-
     try {
         const results = await searchWikipedia(query);
-        displayResults(results, fetchArticle);
+        displayResults(results, query, handleResultClick);
     } catch (error) {
-        handleApiError(error);
+        displayError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
-        isSearching = false;
         setSearching(false);
     }
 }
 
-async function fetchArticle(pageId: number) {
+async function handleResultClick(pageId: number) {
     if (isSearching) return;
     isSearching = true;
     setSearching(true);
@@ -96,9 +100,11 @@ async function fetchArticle(pageId: number) {
 
     try {
         const article = await getWikipediaArticle(pageId);
-        displayArticle(article);
+        displayArticle(article, () => {
+            showResults();
+        });
     } catch (error) {
-        handleApiError(error);
+        displayError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
         isSearching = false;
         setSearching(false);
