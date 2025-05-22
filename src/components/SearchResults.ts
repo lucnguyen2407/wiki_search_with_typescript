@@ -15,7 +15,6 @@ export function createSearchResults() {
                 return;
             }
 
-            // Add title for search results
             const titleContainer = document.createElement("div");
             titleContainer.className = "mb-6";
             const title = document.createElement("h2");

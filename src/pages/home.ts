@@ -9,12 +9,11 @@ const { resultsContainer, displayResults, displayError } = createSearchResults()
 
 export function HomePage() {
     const app = document.getElementById("app")!;
-    app.innerHTML = ""; // Clear the app container
+    app.innerHTML = "";
 
     app.appendChild(searchSection);
     app.appendChild(resultsContainer);
 
-    // Add click outside listener to close suggestions
     document.addEventListener("click", (e) => {
         if (!searchContainer.contains(e.target as Node)) {
             hideSuggestions();

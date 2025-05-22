@@ -13,14 +13,12 @@ import {
 import { router } from "../router";
 import { searchWikipedia } from "../services/wikipediaApi";
 
-// State management
 let isSearching = false;
 
 export function setupEventListeners() {
     const searchInput = getSearchInput();
     const searchButton = getSearchButton();
 
-    // Debounced search suggestions
     const debouncedSearch = debounceSearch(async (query: string) => {
         const trimmedQuery = query.trim();
         if (!trimmedQuery || trimmedQuery.length < 3) {
@@ -40,14 +38,12 @@ export function setupEventListeners() {
         }
     });
 
-    // Add input event listener for suggestions
     searchInput.addEventListener("input", (e) => {
         const query = (e.target as HTMLInputElement).value.trim();
-        hideError(); // Hide error when user starts typing
+        hideError();
         debouncedSearch(query);
     });
 
-    // Add focus event listener
     searchInput.addEventListener("focus", () => {
         const query = searchInput.value.trim();
         if (query && query.length >= 3) {
@@ -55,7 +51,6 @@ export function setupEventListeners() {
         }
     });
 
-    // Handle form submission
     searchButton.addEventListener("click", () => {
         const query = searchInput.value.trim();
         handleSearch(query);
@@ -92,7 +87,6 @@ export async function handleResultClick(pageId: number) {
     hideSuggestions();
 
     try {
-        // Navigate to article page
         router.navigate(`/article/${pageId}`);
     } catch (error) {
         displayError(error instanceof Error ? error.message : "An error occurred");

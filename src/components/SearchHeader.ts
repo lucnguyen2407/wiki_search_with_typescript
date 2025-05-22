@@ -14,7 +14,6 @@ export function createSearchHeader() {
     const searchContainer = document.createElement("div");
     searchContainer.className = "flex flex-col gap-2 mb-8 relative";
 
-    // Create form wrapper
     const formWrapper = document.createElement("div");
     formWrapper.className = "flex gap-2";
 

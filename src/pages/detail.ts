@@ -6,7 +6,7 @@ export function DetailPage() {
     const app = document.getElementById("app")!;
     app.innerHTML = ""; // Clear the app container
 
-    // Create article container
+
     articleContainer = document.createElement("div");
     articleContainer.className = "max-w-7xl mx-auto p-4 px-6 md:px-8 lg:px-12 mt-8 bg-white rounded-lg shadow-lg";
 
@@ -16,7 +16,6 @@ export function DetailPage() {
 export function displayArticle(article: ArticleData, onBackClick: () => void) {
     if (!articleContainer) return;
 
-    // Create image HTML if thumbnail exists
     const imageHtml = article.thumbnail ? `
         <div class="mb-6">
             <img src="${article.thumbnail.source}" 
@@ -54,6 +53,6 @@ export function displayArticle(article: ArticleData, onBackClick: () => void) {
         </div>
     `;
 
-    // Add the back function to the window object
+
     (window as any).backToResults = onBackClick;
 } 
