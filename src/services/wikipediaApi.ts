@@ -75,8 +75,8 @@ export async function searchWikipedia(query: string): Promise<SearchResult[]> {
     pithumbsize: 200,
   });
 
-  if (!response.query.pages) {
-    return [];
+  if (!response.query || !response.query.pages) {
+    throw new Error("No search results found");
   }
 
   // Convert pages object to array and sort by index
