@@ -1,4 +1,4 @@
-function searchInput() {
+function searchInputComponent() {
   let searchInput: HTMLInputElement;
   searchInput = document.createElement("input");
   searchInput.type = "text";
@@ -10,4 +10,4 @@ function searchInput() {
   return searchInput;
 }
 
-export default searchInput;
+export default searchInputComponent;

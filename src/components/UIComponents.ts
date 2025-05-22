@@ -1,8 +1,10 @@
 import { SearchResult, ArticleData } from "../types";
-import searchInput from "./searchInput";
+import searchButtonComponent from "./searchButton";
+import searchInputComponent from "./searchInput";
 
 // UI Elements
-let searchButton: HTMLButtonElement;
+const searchInput = searchInputComponent();
+const searchButton = searchButtonComponent();
 let resultsContainer: HTMLDivElement;
 let articleContainer: HTMLDivElement;
 let suggestionsBox: HTMLDivElement;
@@ -32,13 +34,7 @@ export function initializeUI() {
   const formWrapper = document.createElement("div");
   formWrapper.className = "flex gap-2";
 
-  searchButton = document.createElement("button");
-  searchButton.textContent = "Search";
-  searchButton.className =
-    "px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors";
-  searchButton.setAttribute("type", "submit");
-
-  formWrapper.appendChild(searchInput());
+  formWrapper.appendChild(searchInput);
   formWrapper.appendChild(searchButton);
 
   // Create error message element
@@ -82,7 +78,7 @@ export function initializeUI() {
 }
 
 export function getSearchInput(): HTMLInputElement {
-  return searchInput();
+  return searchInput;
 }
 
 export function getSearchButton(): HTMLButtonElement {
@@ -297,20 +293,20 @@ export function setSearching(isSearching: boolean) {
 export function showError(message: string) {
   errorMessage.textContent = message;
   errorMessage.classList.remove("hidden");
-  searchInput().classList.add("border-red-500");
-  searchInput().classList.add("focus:ring-red-500");
-  searchInput().classList.remove("focus:ring-blue-500");
+  searchInput.classList.add("border-red-500");
+  searchInput.classList.add("focus:ring-red-500");
+  searchInput.classList.remove("focus:ring-blue-500");
 }
 
 export function hideError() {
   errorMessage.classList.add("hidden");
-  searchInput().classList.remove("border-red-500");
-  searchInput().classList.remove("focus:ring-red-500");
-  searchInput().classList.add("focus:ring-blue-500");
+  searchInput.classList.remove("border-red-500");
+  searchInput.classList.remove("focus:ring-red-500");
+  searchInput.classList.add("focus:ring-blue-500");
 }
 
 export function validateSearchInput(): boolean {
-  const query = searchInput().value.trim();
+  const query = searchInput.value.trim();
 
   if (!query) {
     showError("Please enter a search term");

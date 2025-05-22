@@ -112,3 +112,7 @@ async function handleResultClick(pageId: number) {
 // Start the application
 initializeUI();
 setupEventListeners();
+
+function render(element: string, component: HTMLElement) {
+  const app = document.querySelector(element);
+}
