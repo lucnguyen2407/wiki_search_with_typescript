@@ -1,7 +1,7 @@
 import { SearchResult, ArticleData } from "../types";
+import searchInput from "./searchInput";
 
 // UI Elements
-let searchInput: HTMLInputElement;
 let searchButton: HTMLButtonElement;
 let resultsContainer: HTMLDivElement;
 let articleContainer: HTMLDivElement;
@@ -32,21 +32,13 @@ export function initializeUI() {
   const formWrapper = document.createElement("div");
   formWrapper.className = "flex gap-2";
 
-  searchInput = document.createElement("input");
-  searchInput.type = "text";
-  searchInput.placeholder = "Search Wikipedia...";
-  searchInput.className =
-    "flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500";
-  searchInput.setAttribute("aria-label", "Search Wikipedia");
-  searchInput.setAttribute("required", "true");
-
   searchButton = document.createElement("button");
   searchButton.textContent = "Search";
   searchButton.className =
     "px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors";
   searchButton.setAttribute("type", "submit");
 
-  formWrapper.appendChild(searchInput);
+  formWrapper.appendChild(searchInput());
   formWrapper.appendChild(searchButton);
 
   // Create error message element
@@ -90,7 +82,7 @@ export function initializeUI() {
 }
 
 export function getSearchInput(): HTMLInputElement {
-  return searchInput;
+  return searchInput();
 }
 
 export function getSearchButton(): HTMLButtonElement {
@@ -305,25 +297,21 @@ export function setSearching(isSearching: boolean) {
 export function showError(message: string) {
   errorMessage.textContent = message;
   errorMessage.classList.remove("hidden");
-  searchInput.classList.add("border-red-500");
-  searchInput.classList.add("focus:ring-red-500");
-  searchInput.classList.remove("focus:ring-blue-500");
+  searchInput().classList.add("border-red-500");
+  searchInput().classList.add("focus:ring-red-500");
+  searchInput().classList.remove("focus:ring-blue-500");
 }
 
 export function hideError() {
   errorMessage.classList.add("hidden");
-  searchInput.classList.remove("border-red-500");
-  searchInput.classList.remove("focus:ring-red-500");
-  searchInput.classList.add("focus:ring-blue-500");
+  searchInput().classList.remove("border-red-500");
+  searchInput().classList.remove("focus:ring-red-500");
+  searchInput().classList.add("focus:ring-blue-500");
 }
 
 export function validateSearchInput(): boolean {
-  const query = searchInput.value.trim();
-  const regex = /^[a-zA-Z0-9\sÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸýỳỵỷỹ]+$/;
-  if (!regex.test(query)) {
-    showError("Input contains invalid or meaningless characters.");
-    return false;
-  }
+  const query = searchInput().value.trim();
+
   if (!query) {
     showError("Please enter a search term");
     return false;
