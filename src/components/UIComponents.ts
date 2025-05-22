@@ -319,6 +319,11 @@ export function hideError() {
 
 export function validateSearchInput(): boolean {
   const query = searchInput.value.trim();
+  const regex = /^[a-zA-Z0-9\sÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸýỳỵỷỹ]+$/;
+  if (!regex.test(query)) {
+    showError("Input contains invalid or meaningless characters.");
+    return false;
+  }
   if (!query) {
     showError("Please enter a search term");
     return false;
