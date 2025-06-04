@@ -79,7 +79,6 @@ export async function searchWikipedia(query: string): Promise<SearchResult[]> {
     throw new Error("No search results found");
   }
 
-  // Convert pages object to array and sort by index
   return Object.values(response.query.pages)
     .sort((a, b) => a.pageid - b.pageid)
     .map((page) => ({
